@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <?php
+session_start();
 $ch_file="";
 include('./control.php');
 include('./config.php');
@@ -115,7 +116,7 @@ foreach ($tvlocations as $tvbox) {
 		}
 		if (isset($_GET['tv'])) {
 			$tv = $_GET['tv'];
-			if ($tv != "null") {
+			if ($tv != null) {
 				$plexClientName = $_GET['tv'];
 				$urlstring = "tv=" . $_GET['tv'] . "&";
 				$urlstring = $urlstring;
@@ -125,43 +126,52 @@ foreach ($tvlocations as $tvbox) {
 				}
 			} else {
 				$tv = plexClientName;
-				$urlstring = "";
+				$urlstring = "tv=" . $tv . "&";
 			}
 		} else {
 			$tv = $plexClientName;
 		}
-		if (isset($_GET['time'])) {
+		if ($_GET['time'] != null && $_GET['time'] !="0") {
 		        $time = $_GET['time'];
+			$timeSeconds = $_GET['time'] * 60;
+			$_SESSION['timeOffset'] = $_SESSION['timeOffset'] + $timeSeconds;
 	        } else {
 		        $time = "0";
+			$_SESSION['timeOffset'] = "0";
 		}
-
 		$dircontents=array();
 		//GET ALL PSEUDO CHANNEL DAILY SCHEDULE XML FILE LOCATIONS
-		$lsgrep = exec("find ". $pseudochannelMaster . "pseudo-channel_*/schedules | grep xml | tr '\n' ','"); //list the paths of all daily schedule xml files in as comma sparated
+		$lsgrep = exec("find ". $pseudochannelMaster . "pseudo-channel_* -name pseudo-channel.db | tr '\n' ','"); //list the paths of all daily schedule xml files in as comma sparated
 		$dircontents = explode(",", $lsgrep); //write file locations into an array
 		$scheduleTable = "<table width='100%' max-width='100%' class='schedule-table'><thead><tr width='100%'><th width='4%' max-width='4%'>&nbsp;Ch.&nbsp;</th><th colspan='1' width='8%' max-width='8%' id=nowtime>Now</th><th colspan='1' width='8%' max-width='8%' id=timePlus15>+15</th><th colspan='1' width='8%' max-width='8%' id=timePlus30>+30</th><th colspan='1' width='8%' max-width='8%' id=timePlus45>+45</th><th colspan='1' max-width='8%' width='8%' id=timePlus60>+60</th><th colspan='1' width='8%' max-width='8%' id=timePlus75>+75</th><th colspan='1' max-width='8%' width='8%' id=timePlus90>+90</th><th colspan='1' width='8%' max-width='8%' id=timePlus105>+105</th><th colspan='1' max-width='8%' width='8%' id=timePlus120>+120</th><th colspan='1' width='8%' max-width='8%' id=timePlus135>+135</th><th colspan='1' max-width='8%' width='8%' id=timePlus150>+150</th><th colspan='1' width='8%' max-width='8%' id=timePlus165>+165</th></tr></thead><tbody>";
-		$nowPlayingDisplay = "<p style='color:yellow'>$plexClientName <span style='color:white' id='nowplaying' class='container'>Please Stand By</span></p>";
-
+		$nowPlayingDisplay = "<p style='color:yellow'>Display: $plexClientName </br><span style='color:white' id='nowplaying' class='container'>Not Playing</span></br><a style='color:yellow' href='schedule.php?" . $urlstring . "action=stop'>Stop Channel</a></p>";
+		$timeOffsetDisplay = "<table width='100%' style='color:white;text-align:center'>";
+		$timeOffsetDisplay .= "<tr><td><a style='color:yellow' href='schedule.php?" . $urlstring . "time=-180'>&#171;&#8249;</a></td>";
+		$timeOffsetDisplay .= "<td><a style='color:yellow' href='schedule.php?" . $urlstring . "time=-120'>&#171;</a></td>";
+		$timeOffsetDisplay .= "<td><a style='color:yellow' href='schedule.php?" . $urlstring . "time=-60'>&#8249;</a></td>";
+		$timeOffsetDisplay .= "<td><a style='color:yellow' href='schedule.php?" . $urlstring . "time=0'>Schedule Offset (Click to Reset)</a></td>";
+		$timeOffsetDisplay .= "<td><a style='color:yellow' href='schedule.php?" . $urlstring . "time=60'>&#8250;</a></td>";
+		$timeOffsetDisplay .= "<td><a style='color:yellow' href='schedule.php?" . $urlstring . "time=120'>&#187;</a></td>";
+		$timeOffsetDisplay .= "<td><a style='color:yellow' href='schedule.php?" . $urlstring . "time=180'>&#8250;&#187;</a></td></tr></table>";
 		foreach ($dircontents as $xmlfile) { //do the following for each xml schedule file
 		$ch_file = str_replace($pseudochannelMaster . "pseudo-channel_", "ch", $xmlfile); //get channel number
-		$ch_file = str_replace("/schedules/pseudo_schedule.xml", "", $ch_file);
+		$ch_file = str_replace("/pseudo-channel.db", "", $ch_file);
 		$ch_number = str_replace("ch", "", $ch_file);
 		$ch_row = "row" . $ch_number;
 		$ch_cell = "chan" . $ch_number;
-		if($xmlfile){
+/*		if($xmlfile){
 			$xmldata = simplexml_load_file($xmlfile); //load the xml schedule file
-		}
-		if($xmldata){
+		} */
+		if($xmlfile){
 			$scheduleTable .= "<tr class='schedule-table' max-width='100%' min-width='100%' width='100%' id='$ch_row'></tr>";
-		}
+			}
 		}
 		$scheduleTable .= "</tbody></table>";
 		?>
 		<div class="container main-container">
 			<?php echo $nowPlayingDisplay;
+			echo $timeOffsetDisplay;
 			echo $scheduleTable; ?>
-			</br><a href="schedule.php?action=updateweb&<?php echo $urlstring; ?>" style="color:white" href="">Update Channel Schedule Data &#8594;</a>
 		</div><!-- /container -->
 		<div id="topbar" name="topbar"></div>
 	</body>
