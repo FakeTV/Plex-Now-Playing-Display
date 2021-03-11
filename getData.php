@@ -1,4 +1,7 @@
 <?php
+
+session_start();
+
 $width = "<script type='text/javascript'>document.write(window.innerWidth);</script>";
 $height = "<script type='text/javascript'>document.write(window.innerHeight);</script>";
 include 'config.php'; //Get variables from config
@@ -14,12 +17,18 @@ if (isset($_GET['tv'])) {
 			$pseudochannel = trim($pseudochannel);
 		}
 	} else {
-		$tv = plexClientName;
+		$tv = $plexClientName;
                 $urlstring = "";
 	}
 } else {
 	$urlstring = "";
 }
+
+if ($_SESSION['timeOffset'] != "0") {
+        $timeOffset = $_SESSION['timeOffset'];
+        } else {
+        $timeOffset = 0;
+        }
 
 //GET PLEX DATA
 $url = "http://" . $plexServer . ":" . $plexport . "/status/sessions?X-Plex-Token=" . $plexToken; #set plex server url
@@ -63,6 +72,7 @@ $dircontents = explode(",", $lsgrep); //write file locations into an array
 //GET ALL PSEUDO CHANNEL DATABASE FILE LOCATIONS
 $DBarray = array();
 $findDB = exec("find ". $pseudochannelMaster . "pseudo-channel_* -name 'pseudo-channel.db' | tr '\n' ','");
+$findDB = substr($findDB, 0, -1);
 $DBarray = explode(",", $findDB);
 
 // LINE STYLE VARIABLES
@@ -238,8 +248,8 @@ foreach ($DBarray as $databasefile) { //do the following for each database file
 		}
 
 		if ($doheader != "1") {
-			$currentTime = $dateunix;
-			$nowTimeUnix = floor($dateunix / 900) * 900;
+			$currentTime = $dateunix + $timeOffset;
+			$nowTimeUnix = floor($currentTime / 900) * 900;
 			$results['nowtime'] = date("H:i", $nowTimeUnix);
 			$timePlus15Unix = floor(($currentTime + 900) / 900) * 900;
 			$results['timePlus15'] = date("H:i", $timePlus15Unix);
@@ -340,13 +350,24 @@ foreach ($DBarray as $databasefile) { //do the following for each database file
 			$end_time_modified = $end_time_modified[0];
             $start_time_human = strtotime($sqlData['startTime']);
             $end_time_human = strtotime($end_time_modified);
-            $spanDuration = $end_time_human - $start_time_human - (time() - $start_time_human);
+
+	    $dateUnixOffset = $dateunix + $timeOffset;
+            $spanDuration = $end_time_human - $start_time_human - ($dateUnixOffset - $start_time_human);
+	    if ($spanDuration > ($end_time_human - $start_time_human)) {
+		$spanDuration = $end_time_human - $start_time_human;
+	    }
+	    $results['spanDuration'] = "<span style='color:white'>" . $end_time_human . " - " . $start_time_human . " - (" . $dateunix . " + " . $timeOffset . " - " . $start_time_human . ") = " . $spanDuration . "</span>";
             $colspan = ceil($spanDuration / 900);
 			$timeData .= "<td colspan=$colspan class='$channelPlayingRowClass' style='$channelplaying;text-align:left'><a style='display:block;width:100%' href='?" . $urlstring . "action=channel&num=$ch_number'>" . $offsetNow;
 			if ($sqlData['sectionType'] == "TV Shows") {
 				$timeData .= "<span class='schedule-title' style='$channelplayingTitleStyle;font-size:1.2em'>";
 				$timeData .= $sqlData['showTitle'] . "</span>";
-				$timeData .= "</br><span class='schedule-subtitle' style='font-size:1em';>" . $sqlData['title'] . "&nbsp;(S" . $sqlData['seasonNumber'] . "E" . $sqlData['episodeNumber'] . ")";
+
+				if($sqlData['customSectionName'] == "Playlists") {
+					$timeData .= "</br><span class='schedule-subtitle' style='font-size:1em';>" . $sqlData['title'];
+				} else {
+					$timeData .= "</br><span class='schedule-subtitle' style='font-size:1em';>" . $sqlData['title']  . "&nbsp;(S" . $sqlData['seasonNumber'] . "E" . $sqlData['episodeNumber'] . ")";
+				}
 				$timeData .= "</br>(" . date('H:i',$start_time_human) . " - " . date('H:i',$end_time_human) . ")</span></td>";
 				$lastentry = $sqlData;
 			} elseif ($sqlData['sectionType'] == "Movies") {
@@ -376,7 +397,12 @@ foreach ($DBarray as $databasefile) { //do the following for each database file
 			if ($sqlData['sectionType'] == "TV Shows") {
 				$timeData .= "<span class='schedule-title' style='$channelplayingTitleStyle;font-size:1.2em';>"; 
 				$timeData .= $sqlData['showTitle'] . "</span>";
-				$timeData .= "</br><span class='schedule-subtitle' style='font-size:1em';>" . $sqlData['title'] . "&nbsp;(S" . $sqlData['seasonNumber'] . "E" . $sqlData['episodeNumber'] . ")";
+
+                                if($sqlData['customSectionName'] == "Playlists") {
+					$timeData .= "</br><span class='schedule-subtitle' style='font-size:1em';>" . $sqlData['title'];
+				} else {
+					$timeData .= "</br><span class='schedule-subtitle' style='font-size:1em';>" . $sqlData['title'] . "&nbsp;(S" . $sqlData['seasonNumber'] . "E" . $sqlData['episodeNumber'] . ")";
+				}
 				$timeData .= "</br>(" . date('H:i',$start_time_human) . " - " . date('H:i',$end_time_human) . ")</span></td>";
 				$lastentry = $sqlData;
 			} elseif ($sqlData['sectionType'] == "Movies") {
@@ -407,7 +433,12 @@ foreach ($DBarray as $databasefile) { //do the following for each database file
 			if ($sqlData['sectionType'] == "TV Shows") {
 				$timeData .= "<span class='schedule-title' style='$channelplayingTitleStyle;font-size:1.2em';>"; 
 				$timeData .= $sqlData['showTitle'] . "</span>";
-				$timeData .= "</br><span class='schedule-subtitle' style='font-size:1em';>" . $sqlData['title'] . "&nbsp;(S" . $sqlData['seasonNumber'] . "E" . $sqlData['episodeNumber'] . ")";
+
+				if($sqlData['customSectionName'] == "Playlists") {
+					$timeData .= "</br><span class='schedule-subtitle' style='font-size:1em';>" . $sqlData['title'];
+				} else {
+					$timeData .= "</br><span class='schedule-subtitle' style='font-size:1em';>" . $sqlData['title'] . "&nbsp;(S" . $sqlData['seasonNumber'] . "E" . $sqlData['episodeNumber'] . ")";
+				}
 				$timeData .= "</br>(" . date('H:i',$start_time_human) . " - " . date('H:i',$end_time_human) . ")</span></td>";
 				$lastentry = $sqlData;
 			} elseif ($sqlData['sectionType'] == "Movies") {
@@ -438,7 +469,12 @@ foreach ($DBarray as $databasefile) { //do the following for each database file
 			if ($sqlData['sectionType'] == "TV Shows") {
 				$timeData .= "<span class='schedule-title' style='$channelplayingTitleStyle;font-size:1.2em';>"; 
 				$timeData .= $sqlData['showTitle'] . "</span>";
-				$timeData .= "</br><span class='schedule-subtitle' style='font-size:1em';>" . $sqlData['title'] . "&nbsp;(S" . $sqlData['seasonNumber'] . "E" . $sqlData['episodeNumber'] . ")";
+
+				if($sqlData['customSectionName'] == "Playlists") {
+					$timeData .= "</br><span class='schedule-subtitle' style='font-size:1em';>" . $sqlData['title'];
+				} else {
+					$timeData .= "</br><span class='schedule-subtitle' style='font-size:1em';>" . $sqlData['title'] . "&nbsp;(S" . $sqlData['seasonNumber'] . "E" . $sqlData['episodeNumber'] . ")";
+				}
 				$timeData .= "</br>(" . date('H:i',$start_time_human) . " - " . date('H:i',$end_time_human) . ")</span></td>";
 				$lastentry = $sqlData;
 			} elseif ($sqlData['sectionType'] == "Movies") {
@@ -469,7 +505,12 @@ foreach ($DBarray as $databasefile) { //do the following for each database file
 			if ($sqlData['sectionType'] == "TV Shows") {
 				$timeData .= "<span class='schedule-title' style='$channelplayingTitleStyle;font-size:1.2em';>"; 
 				$timeData .= $sqlData['showTitle'] . "</span>";
-				$timeData .= "</br><span class='schedule-subtitle' style='font-size:1em';>" . $sqlData['title'] . "&nbsp;(S" . $sqlData['seasonNumber'] . "E" . $sqlData['episodeNumber'] . ")";
+
+				if($sqlData['customSectionName'] == "Playlists") {
+					$timeData .= "</br><span class='schedule-subtitle' style='font-size:1em';>" . $sqlData['title'];
+				} else {
+					$timeData .= "</br><span class='schedule-subtitle' style='font-size:1em';>" . $sqlData['title'] . "&nbsp;(S" . $sqlData['seasonNumber'] . "E" . $sqlData['episodeNumber'] . ")";
+				}
 				$timeData .= "</br>(" . date('H:i',$start_time_human) . " - " . date('H:i',$end_time_human) . ")</span></td>";
 				$lastentry = $sqlData;
 			} elseif ($sqlData['sectionType'] == "Movies") {
@@ -500,7 +541,12 @@ foreach ($DBarray as $databasefile) { //do the following for each database file
 			if ($sqlData['sectionType'] == "TV Shows") {
 				$timeData .= "<span class='schedule-title' style='$channelplayingTitleStyle;font-size:1.2em';>"; 
 				$timeData .= $sqlData['showTitle'] . "</span>";
-				$timeData .= "</br><span class='schedule-subtitle' style='font-size:1em';>" . $sqlData['title'] . "&nbsp;(S" . $sqlData['seasonNumber'] . "E" . $sqlData['episodeNumber'] . ")";
+
+				if($sqlData['customSectionName'] == "Playlists") {
+					$timeData .= "</br><span class='schedule-subtitle' style='font-size:1em';>" . $sqlData['title'];
+				} else {
+					$timeData .= "</br><span class='schedule-subtitle' style='font-size:1em';>" . $sqlData['title'] . "&nbsp;(S" . $sqlData['seasonNumber'] . "E" . $sqlData['episodeNumber'] . ")";
+				}
 				$timeData .= "</br>(" . date('H:i',$start_time_human) . " - " . date('H:i',$end_time_human) . ")</span></td>";
 				$lastentry = $sqlData;
 			} elseif ($sqlData['sectionType'] == "Movies") {
@@ -531,7 +577,12 @@ foreach ($DBarray as $databasefile) { //do the following for each database file
 			if ($sqlData['sectionType'] == "TV Shows") {
 				$timeData .= "<span class='schedule-title' style='$channelplayingTitleStyle;font-size:1.2em';>"; 
 				$timeData .= $sqlData['showTitle'] . "</span>";
-				$timeData .= "</br><span class='schedule-subtitle' style='font-size:1em';>" . $sqlData['title'] . "&nbsp;(S" . $sqlData['seasonNumber'] . "E" . $sqlData['episodeNumber'] . ")";
+
+				if($sqlData['customSectionName'] == "Playlists") {
+					$timeData .= "</br><span class='schedule-subtitle' style='font-size:1em';>" . $sqlData['title'];
+				} else {
+					$timeData .= "</br><span class='schedule-subtitle' style='font-size:1em';>" . $sqlData['title'] . "&nbsp;(S" . $sqlData['seasonNumber'] . "E" . $sqlData['episodeNumber'] . ")";
+				}
 				$timeData .= "</br>(" . date('H:i',$start_time_human) . " - " . date('H:i',$end_time_human) . ")</span></td>";
 				$lastentry = $sqlData;
 			} elseif ($sqlData['sectionType'] == "Movies") {
@@ -562,7 +613,12 @@ foreach ($DBarray as $databasefile) { //do the following for each database file
 			if ($sqlData['sectionType'] == "TV Shows") {
 				$timeData .= "<span class='schedule-title' style='$channelplayingTitleStyle;font-size:1.2em';>"; 
 				$timeData .= $sqlData['showTitle'] . "</span>";
-				$timeData .= "</br><span class='schedule-subtitle' style='font-size:1em';>" . $sqlData['title'] . "&nbsp;(S" . $sqlData['seasonNumber'] . "E" . $sqlData['episodeNumber'] . ")";
+
+				if($sqlData['customSectionName'] == "Playlists") {
+					$timeData .= "</br><span class='schedule-subtitle' style='font-size:1em';>" . $sqlData['title'];
+				} else {
+					$timeData .= "</br><span class='schedule-subtitle' style='font-size:1em';>" . $sqlData['title'] . "&nbsp;(S" . $sqlData['seasonNumber'] . "E" . $sqlData['episodeNumber'] . ")";
+				}
 				$timeData .= "</br>(" . date('H:i',$start_time_human) . " - " . date('H:i',$end_time_human) . ")</span></td>";
 				$lastentry = $sqlData;
 			} elseif ($sqlData['sectionType'] == "Movies") {
@@ -593,7 +649,12 @@ foreach ($DBarray as $databasefile) { //do the following for each database file
 			if ($sqlData['sectionType'] == "TV Shows") {
 				$timeData .= "<span class='schedule-title' style='$channelplayingTitleStyle;font-size:1.2em';>"; 
 				$timeData .= $sqlData['showTitle'] . "</span>";
-				$timeData .= "</br><span class='schedule-subtitle' style='font-size:1em';>" . $sqlData['title'] . "&nbsp;(S" . $sqlData['seasonNumber'] . "E" . $sqlData['episodeNumber'] . ")";
+
+				if($sqlData['customSectionName'] == "Playlists") {
+					$timeData .= "</br><span class='schedule-subtitle' style='font-size:1em';>" . $sqlData['title'];
+				} else {
+					$timeData .= "</br><span class='schedule-subtitle' style='font-size:1em';>" . $sqlData['title'] . "&nbsp;(S" . $sqlData['seasonNumber'] . "E" . $sqlData['episodeNumber'] . ")";
+				}
 				$timeData .= "</br>(" . date('H:i',$start_time_human) . " - " . date('H:i',$end_time_human) . ")</span></td>";
 				$lastentry = $sqlData;
 			} elseif ($sqlData['sectionType'] == "Movies") {
@@ -624,7 +685,12 @@ foreach ($DBarray as $databasefile) { //do the following for each database file
 			if ($sqlData['sectionType'] == "TV Shows") {
 				$timeData .= "<span class='schedule-title' style='$channelplayingTitleStyle;font-size:1.2em';>"; 
 				$timeData .= $sqlData['showTitle'] . "</span>";
-				$timeData .= "</br><span class='schedule-subtitle' style='font-size:1em';>" . $sqlData['title'] . "&nbsp;(S" . $sqlData['seasonNumber'] . "E" . $sqlData['episodeNumber'] . ")";
+
+				if($sqlData['customSectionName'] == "Playlists") {
+					$timeData .= "</br><span class='schedule-subtitle' style='font-size:1em';>" . $sqlData['title'];
+				} else {
+					$timeData .= "</br><span class='schedule-subtitle' style='font-size:1em';>" . $sqlData['title'] . "&nbsp;(S" . $sqlData['seasonNumber'] . "E" . $sqlData['episodeNumber'] . ")";
+				}
 				$timeData .= "</br>(" . date('H:i',$start_time_human) . " - " . date('H:i',$end_time_human) . ")</span></td>";
 				$lastentry = $sqlData;
 			} elseif ($sqlData['sectionType'] == "Movies") {
@@ -655,7 +721,12 @@ foreach ($DBarray as $databasefile) { //do the following for each database file
 			if ($sqlData['sectionType'] == "TV Shows") {
 				$timeData .= "<span class='schedule-title' style='$channelplayingTitleStyle;font-size:1.2em';>"; 
 				$timeData .= $sqlData['showTitle'] . "</span>";
-				$timeData .= "</br><span class='schedule-subtitle' style='font-size:1em';>" . $sqlData['title'] . "&nbsp;(S" . $sqlData['seasonNumber'] . "E" . $sqlData['episodeNumber'] . ")";
+
+				if($sqlData['customSectionName'] == "Playlists") {
+					$timeData .= "</br><span class='schedule-subtitle' style='font-size:1em';>" . $sqlData['title'];
+				} else {
+					$timeData .= "</br><span class='schedule-subtitle' style='font-size:1em';>" . $sqlData['title'] . "&nbsp;(S" . $sqlData['seasonNumber'] . "E" . $sqlData['episodeNumber'] . ")";
+				}
 				$timeData .= "</br>(" . date('H:i',$start_time_human) . " - " . date('H:i',$end_time_human) . ")</span></td>";
 				$lastentry = $sqlData;
 			} elseif ($sqlData['sectionType'] == "Movies") {
@@ -686,7 +757,12 @@ foreach ($DBarray as $databasefile) { //do the following for each database file
 			if ($sqlData['sectionType'] == "TV Shows") {
 				$timeData .= "<span class='schedule-title' style='$channelplayingTitleStyle;font-size:1.2em';>"; 
 				$timeData .= $sqlData['showTitle'] . "</span>";
-				$timeData .= "</br><span class='schedule-subtitle' style='font-size:1em';>" . $sqlData['title'] . "&nbsp;(S" . $sqlData['seasonNumber'] . "E" . $sqlData['episodeNumber'] . ")";
+
+				if($sqlData['customSectionName'] == "Playlists") {
+					$timeData .= "</br><span class='schedule-subtitle' style='font-size:1em';>" . $sqlData['title'];
+				} else {
+					$timeData .= "</br><span class='schedule-subtitle' style='font-size:1em';>" . $sqlData['title'] . "&nbsp;(S" . $sqlData['seasonNumber'] . "E" . $sqlData['episodeNumber'] . ")";
+				}
 				$timeData .= "</br>(" . date('H:i',$start_time_human) . " - " . date('H:i',$end_time_human) . ")</span></td>";
 				$lastentry = $sqlData;
 			} elseif ($sqlData['sectionType'] == "Movies") {
@@ -704,13 +780,17 @@ foreach ($DBarray as $databasefile) { //do the following for each database file
 	$rowContents = $channelData . $timeData;
 	$results["$ch_row"] = "$rowContents";
 	$timeData = "";
+
+	$psDB = null;
 }
 
 $nowtable .= "</table>"; 
 if (isset($results[$ch_file])) {
 	$results[$ch_file] .= "</table>";
 }
+
 //$results['nowplaying'] = "$nowplaying";
+
 $results['row'] = "";
 echo json_encode($results);
 ?>
