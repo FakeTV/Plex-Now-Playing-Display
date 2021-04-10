@@ -247,16 +247,23 @@ table {
 	font-weight: 300;
 }
 
-.container > header span {
+.container > header {
 	display: block;
 	font-size: 55%;
 	color: #74818e;
 	padding: 0 0 0.6em 0.1em;
 }
 
+.edit-schedule{
+	color:white;
+	font-family:"overpass-regular";
+	font-style:normal;
+	vertical-align:center;
+	text-align: center;
+}
+
 .schedule-table {
 	color:white;
-	font-size:1.1em;
 	font-family:"overpass-regular";
 	font:"./fonts/overpass/overpass-regular.ttf"
 	font-style: normal;
@@ -279,7 +286,6 @@ table tr:hover td {
 
 
 .schedule-table, th {
-	font-size:1.2em;
 	outline:2px solid white;
 	background-color:#34495e;
 }
@@ -291,9 +297,20 @@ table tr:hover td {
   	justify-content: left;
 }
 
+.schedule-title {
+	display:regular;
+	font-size:1.0em;
+	font-weight: bold;
+}
+
+.schedule-subtitle {
+	display:regular;
+	font-size:0.75em;
+}
+
 .schedule-table .schedule-channel-favicon {
 	max-height: 50px;
-	width: 100%;
+	width: 95%;
 }
 
 .schedule-table a:hover {
@@ -309,7 +326,6 @@ table tr:hover td {
 .main-container {
 	margin-top: 80px;
     max-width: 100%;
-
     margin: 80px auto;
 }
 
