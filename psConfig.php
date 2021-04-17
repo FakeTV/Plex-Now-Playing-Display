@@ -5,6 +5,9 @@
 		$DisplayType = 'half';
 		
 //Schedule Type
-		$ScheduleType = 'landscape';
+		$ScheduleType = '';
+		
+//Debug Mode
+		$DebugMode = 'off';
 		?>
 		

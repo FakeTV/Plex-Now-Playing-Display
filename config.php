@@ -1,5 +1,5 @@
 <?php
-session_start();
+//session_start();
 include('./psConfig.php');
 $get_plex_token = array();
 $plexServer_url = array();
@@ -7,28 +7,40 @@ $getConfig = array();
 $clientsxml = array();
 $clientdata = array();
 //Pseudo Channel Config File
-$pseudoConfig = $pseudochannel . "pseudo_config.py";
+$pseudoConfig = $pseudochannel . "/pseudo_config.py";
 $getConfig = file_get_contents($pseudoConfig);
 $getConfig = explode("\n",$getConfig);
 
 //Get Plex data from plex_token file in Pseudo Channel
-$plex_token = $pseudochannel . "plex_token.py";
-$get_token = file_get_contents($plex_token);
-$get_plex_token = explode("\n", $get_token);
-$baseurl = $get_plex_token['1'];
-$baseurl = str_replace("'","",$baseurl);
-$baseurl = str_replace("baseurl = ","",$baseurl);
+$plex_token = $pseudochannel . "/plex_token.py";
+//$get_token = file_get_contents($plex_token);
+//$get_plex_token = explode("\n", $get_token);
+
+$pt = fopen($plex_token, 'r');
+while(! feof($pt)) {
+	$token_line = fgets($pt);
+	if (strpos($token_line, 'token =') !== false) {
+		$token = $token_line;
+		$token = str_replace("'","",$token);
+		$plexToken = str_replace("token = ","",$token);
+	} elseif (strpos($token_line, 'baseurl =') !== false) {
+		$baseurl = $token_line;
+		$baseurl = str_replace("'","",$baseurl);
+		$baseurl = str_replace("baseurl = ","",$baseurl);
+	}
+}
+fclose($pt);
 $plexServer_url = parse_url($baseurl);
 $plexServer = $plexServer_url['host'];
 $plexport = $plexServer_url['port'];
-$token = $get_plex_token['0'];
-$token = str_replace("'","",$token);
-$plexToken = str_replace("token = ","",$token);
-
 //Get Client Name from Pseudo Channel Config
 $configClientName = $getConfig[40];
-$configClientName = trim($configClientName, 'plexClients = ["');
-$configClientName = str_replace('"]','',$configClientName);
+$configClientName = trim($configClientName, 'plexClients = [');
+$configClientName = trim($configClientName, '\'');
+$configClientName = trim($configClientName, '\"');
+$configClientName = str_replace(']','',$configClientName);
+$configClientName = str_replace('\"','',$configClientName);
+$configClientName = str_replace('\'','',$configClientName);
 $configClientName = trim($configClientName);
 $pseudochannelMaster = $pseudochannel;
 $pseudochannelMaster = trim($pseudochannelMaster);

@@ -5,17 +5,17 @@ include('./config.php');
 $tvlocations = glob($pseudochannelTrim . "*", GLOB_ONLYDIR);
 $boxes = '';
 if (isset($_GET['tv'])) {
-        $plexClientName = $_GET['tv'];
-        $urlstring = "tv=" . $_GET['tv'];
-        if ($_GET['tv'] != $configClientName) {
-                $pseudochannel = $pseudochannelTrim . "_" . $_GET['tv'] . "/";
-                $pseudochannel = trim($pseudochannel);
+	$plexClientName = $_GET['tv'];
+	$urlstring = "tv=" . $_GET['tv'];
+	if ($_GET['tv'] !== $configClientName && $_GET['tv'] !== "null" && $_GET['tv'] !== NULL) {
+			$pseudochannel = $pseudochannelTrim . "_" . $_GET['tv'] . "/";
+			$pseudochannel = trim($pseudochannel);
 	}
 } else {
 	$urlstring = "";
 }
 foreach ($tvlocations as $tvbox) {
-        if ($tvbox . "/"  == $pseudochannelMaster) {
+        if ($tvbox == $pseudochannelMaster) {
                 $boxname = $configClientName;
                 $boxes .= "<li><a href='schedule.php?tv=$boxname' class='gn-icon gn-icon-videos'>TV: $boxname</a></li>";
         } else {

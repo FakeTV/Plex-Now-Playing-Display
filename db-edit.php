@@ -52,7 +52,7 @@ $boxes = '';
 		<?php
 		$dircontents=array();
 		$ch_number = $_GET['channelNumber'];
-		$databasefile = $pseudochannelMaster . "pseudo-channel_" . $ch_number . "/pseudo-channel.db";
+		$databasefile = $pseudochannelMaster . "/pseudo-channel_" . $ch_number . "/pseudo-channel.db";
 		$entryID = $_GET['id'];
 		$psDB = new SQLite3($databasefile);
 		$ch_file = "ch" . $ch_number;

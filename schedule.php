@@ -7,7 +7,7 @@ include('./config.php');
 $tvlocations = glob($pseudochannelTrim . "*", GLOB_ONLYDIR);
 $boxes = '';
 foreach ($tvlocations as $tvbox) {
-	if ($tvbox . "/"  == $pseudochannelMaster) {
+	if ($tvbox == $pseudochannelMaster) {
 		$boxname = $configClientName;
 		$boxes .= "<li><a href='schedule.php?tv=$boxname' class='gn-icon gn-icon-videos'>TV: $boxname</a></li>";
 	} else {
@@ -27,7 +27,7 @@ foreach ($tvlocations as $tvbox) {
                         const queryString = window.location.search;
                         const urlParams = new URLSearchParams(queryString);
                         const tv = urlParams.get('tv');
-			if (tv != "null") {
+			if (tv !== "null") {
 				topbar = "topbar.php?tv="+tv;
                         	getdata = "getData.php?tv="+tv;
 				getclock = "getClock.php?tv="+tv;
@@ -116,7 +116,7 @@ foreach ($tvlocations as $tvbox) {
 		}
 		if (isset($_GET['tv'])) {
 			$tv = $_GET['tv'];
-			if ($tv != null) {
+			if ($tv != "null") {
 				$plexClientName = $_GET['tv'];
 				$urlstring = "tv=" . $_GET['tv'] . "&";
 				$urlstring = $urlstring;
@@ -139,10 +139,15 @@ foreach ($tvlocations as $tvbox) {
 		        $time = "0";
 			$_SESSION['timeOffset'] = "0";
 		}
-		$dircontents=array();
-		//GET ALL PSEUDO CHANNEL DAILY SCHEDULE XML FILE LOCATIONS
-		$lsgrep = exec("find ". $pseudochannelMaster . "pseudo-channel_* -name pseudo-channel.db | tr '\n' ','"); //list the paths of all daily schedule xml files in as comma sparated
-		$dircontents = explode(",", $lsgrep); //write file locations into an array
+
+		//GET ALL PSEUDO CHANNEL DAILY SCHEDULE DATABASE FILE LOCATIONS
+		$DBarray = array();
+		$findDB = "";
+		foreach(glob($pseudochannelMaster . "/pseudo-channel_*/pseudo-channel.db") as $foundDB) {
+			$findDB .= $foundDB . ",";
+		}
+		$DBarray = explode(",", $findDB);	
+		
 		$scheduleTable = "<table width='100%' max-width='100%' class='schedule-table'><thead><tr width='100%'><th width='4%' max-width='4%'>&nbsp;Ch.&nbsp;</th><th colspan='1' width='8%' max-width='8%' id=nowtime>Now</th><th colspan='1' width='8%' max-width='8%' id=timePlus15>+15</th><th colspan='1' width='8%' max-width='8%' id=timePlus30>+30</th><th colspan='1' width='8%' max-width='8%' id=timePlus45>+45</th><th colspan='1' max-width='8%' width='8%' id=timePlus60>+60</th><th colspan='1' width='8%' max-width='8%' id=timePlus75>+75</th><th colspan='1' max-width='8%' width='8%' id=timePlus90>+90</th><th colspan='1' width='8%' max-width='8%' id=timePlus105>+105</th><th colspan='1' max-width='8%' width='8%' id=timePlus120>+120</th><th colspan='1' width='8%' max-width='8%' id=timePlus135>+135</th><th colspan='1' max-width='8%' width='8%' id=timePlus150>+150</th><th colspan='1' width='8%' max-width='8%' id=timePlus165>+165</th></tr></thead><tbody>";
 		$nowPlayingDisplay = "<p style='color:yellow'>Display: $plexClientName </br><span style='color:white' id='nowplaying' class='container'>Not Playing</span></br><a style='color:yellow' href='schedule.php?" . $urlstring . "action=stop'>Stop Channel</a></p>";
 		$timeOffsetDisplay = "<table width='100%' style='color:white;text-align:center'>";
@@ -153,8 +158,8 @@ foreach ($tvlocations as $tvbox) {
 		$timeOffsetDisplay .= "<td><a style='color:yellow' href='schedule.php?" . $urlstring . "time=60'>&#8250;</a></td>";
 		$timeOffsetDisplay .= "<td><a style='color:yellow' href='schedule.php?" . $urlstring . "time=120'>&#187;</a></td>";
 		$timeOffsetDisplay .= "<td><a style='color:yellow' href='schedule.php?" . $urlstring . "time=180'>&#8250;&#187;</a></td></tr></table>";
-		foreach ($dircontents as $xmlfile) { //do the following for each xml schedule file
-		$ch_file = str_replace($pseudochannelMaster . "pseudo-channel_", "ch", $xmlfile); //get channel number
+		foreach ($DBarray as $xmlfile) { //do the following for each channel
+		$ch_file = str_replace($pseudochannelMaster . "/pseudo-channel_", "ch", $xmlfile); //get channel number
 		$ch_file = str_replace("/pseudo-channel.db", "", $ch_file);
 		$ch_number = str_replace("ch", "", $ch_file);
 		$ch_row = "row" . $ch_number;
@@ -163,7 +168,7 @@ foreach ($tvlocations as $tvbox) {
 			$xmldata = simplexml_load_file($xmlfile); //load the xml schedule file
 		} */
 		if($xmlfile){
-			$scheduleTable .= "<tr class='schedule-table' max-width='100%' min-width='100%' width='100%' id='$ch_row'></tr>";
+			$scheduleTable .= "<tr class='schedule-table' max-width='100%' min-width='100%' width='95%' id='$ch_row'></tr>";
 			}
 		}
 		$scheduleTable .= "</tbody></table>";
@@ -172,6 +177,8 @@ foreach ($tvlocations as $tvbox) {
 			<?php echo $nowPlayingDisplay;
 			echo $timeOffsetDisplay;
 			echo $scheduleTable; ?>
+		<span class='schedule-subtitle' id="testClock" name="testClock" style='color:white'></span></br>
+		<span class='schedule-subtitle' id="testData" name="testData" style='color:white'></span>
 		</div><!-- /container -->
 		<div id="topbar" name="topbar"></div>
 	</body>

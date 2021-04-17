@@ -84,7 +84,7 @@ $boxes = '';
 
 		//GET ALL PSEUDO CHANNEL DATABASE FILE LOCATIONS
 		$DBarray = array();
-		$globString = $pseudochannelMaster . "pseudo-channel_*/pseudo-channel.db";
+		$globString = $pseudochannelMaster . "/pseudo-channel_*/pseudo-channel.db";
 		$DBarray = glob($globString);
 		if(isset($_GET['channel'])) {
 			$channelNumber = $_GET['channel'];
@@ -98,7 +98,7 @@ $boxes = '';
 		}
 		$channelDropdown = "<table><span style='color:white'>CHANNEL: </span><form method='get'><select name='channel' style='width:4em'>";
 		foreach($DBarray as $channelFromList) {
-			$channelFile = str_replace($pseudochannelMaster . "pseudo-channel_", "", $channelFromList);
+			$channelFile = str_replace($pseudochannelMaster . "/pseudo-channel_", "", $channelFromList);
 			$channelFileNumber = str_replace("/pseudo-channel.db", "", $channelFile);
 			if ($channelNumber == $channelFileNumber) {
 				$channelDropdown .= "<option value='" . $channelFileNumber . "' selected>" . $channelFileNumber . "</option>";
@@ -122,7 +122,7 @@ $boxes = '';
 		foreach ($DBarray as $databasefile) { //do the following for each database file
 			if($databasefile) {
 				$psDB = new SQLite3($databasefile);
-				$ch_file = str_replace($pseudochannelMaster . "pseudo-channel_", "ch", $databasefile); //get channel number
+				$ch_file = str_replace($pseudochannelMaster . "/pseudo-channel_", "ch", $databasefile); //get channel number
 				$ch_file = str_replace("/pseudo-channel.db", "", $ch_file);
 				$ch_number = str_replace("ch", "", $ch_file);
 				$ch_row = "row" . $ch_number;

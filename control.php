@@ -9,9 +9,9 @@ if(empty($_GET["tv"]) || $_GET["tv"] == $configClientName) {
 }
 	$channel_number = $_GET["num"];
 	ob_start();
-	echo exec("ps aux | grep '[m]anual.sh'", $o);
-	if(count($o) <= 0){
-		echo exec("cd " . "$ps" . " && sudo -u $user /bin/bash manual.sh " . "$channel_number > /dev/null 2>/dev/null &");
+	echo exec("ps aux | grep '[c]ontrol.py'", $o);
+	if(count($o) <= 0){	
+		echo exec("python -u " . "$ps" . "/controls.py -c " . "$channel_number > ./control.txt 2>&1 &", $output, $err);
 	}
 	ob_end_clean();
 }
@@ -24,9 +24,9 @@ if(empty($_GET["tv"]) || $_GET["tv"] == $configClientName) {
         $ps = "$pseudochannelTrim" . "_" . $_GET["tv"];
 }
 	ob_start();
-	echo exec("ps aux | grep '[s]top-all-channels.sh'", $o);
-	if(count($o) <= 0){
-		echo exec("cd " . "$ps" . " && sudo -u $user /bin/bash stop-all-channels.sh > /dev/null 2>/dev/null &");
+	echo exec("ps aux | grep '[c]ontrol.py'", $o);
+	if(count($o) <= 0){	
+		echo exec("python -u " . "$ps" . "/controls.py -s > /dev/null 2>&1 &");
 	}
 	ob_end_clean();
 }
@@ -39,10 +39,10 @@ if(empty($_GET["tv"]) || $_GET["tv"] == $configClientName) {
         $ps = "$pseudochannelTrim" . "_" . $_GET["tv"];
 }
 	ob_start();
-	echo exec("ps aux | grep '[c]hanneldown.sh'", $o);
-	if(count($o) <= 0){
-        echo exec("cd " . "$ps" . " && sudo -u $user /bin/bash channeldown.sh > /dev/null 2>/dev/null &");
-    }
+	echo exec("ps aux | grep '[c]ontrol.py'", $o);
+	if(count($o) <= 0){	
+		echo exec("python -u " . "$ps" . "/controls.py -dn > /dev/null 2>&1 &", $output, $err);
+	}
 	ob_end_clean();
 }
 function channel_up() {
@@ -54,13 +54,13 @@ if(empty($_GET["tv"]) || $_GET["tv"] == $configClientName) {
         $ps = "$pseudochannelTrim" . "_" . $_GET["tv"];
 }
 	ob_start();
-	echo exec("ps aux | grep '[c]hannelup.sh'", $o);
-	if(count($o) <= 0){
-        echo exec("cd " . "$ps" . " && sudo -u $user /bin/bash channelup.sh > /dev/null 2>/dev/null &");
-    }
+	echo exec("ps aux | grep '[c]ontrol.py'", $o);
+	if(count($o) <= 0){	
+		echo exec("python -u " . "$ps" . "/controls.py -up > /dev/null 2>&1 &", $output, $err);
+	}
 	ob_end_clean();
 }
-function update_web() {
+function last() {
 include('config.php');
 if(empty($_GET["tv"]) || $_GET["tv"] == $configClientName) {
         $ps = "$pseudochannelMaster";
@@ -69,11 +69,25 @@ if(empty($_GET["tv"]) || $_GET["tv"] == $configClientName) {
         $ps = "$pseudochannelTrim" . "_" . $_GET["tv"];
 }
 	ob_start();
-    echo exec("ps aux | grep '[u]pdateweb.sh'", $o);
-    //error_log(print_r(count($o), TRUE)); 
-    if(count($o) <= 0){
-    	echo exec("cd " . "$ps" . " && sudo -u $user /bin/bash updateweb.sh > /dev/null 2>/dev/null &");
-    }
+	echo exec("ps aux | grep '[c]ontrol.py'", $o);
+	if(count($o) <= 0){	
+		echo exec("python -u " . "$ps" . "/controls.py -l > /dev/null 2>&1 &", $output, $err);
+	}
+	ob_end_clean();
+}
+function restart() {
+include('config.php');
+if(empty($_GET["tv"]) || $_GET["tv"] == $configClientName) {
+        $ps = "$pseudochannelMaster";
+} else {
+	$pseudochannel = substr($pseudochannel, 0, -1);
+        $ps = "$pseudochannelTrim" . "_" . $_GET["tv"];
+}
+	ob_start();
+	echo exec("ps aux | grep '[c]ontrol.py'", $o);
+	if(count($o) <= 0){	
+		echo exec("python -u " . "$ps" . "/controls.py -r > /dev/null 2>&1 &", $output, $err);
+	}
 	ob_end_clean();
 }
 function purge_favicon_cache() {
@@ -85,8 +99,14 @@ function databaseUpdate() {
 include('config.php');
 $ps = "$pseudochannelMaster";
 	ob_start();
-	echo exec("cd " . "$ps" . " && sudo -u $user /bin/bash globalupdate.sh");
-	echo exec("/bin/bash updatexml.sh");
+	echo exec("python -u " . "$ps" . "/controls.py -u >| output.log 2>&1 &", $output, $err);
+	ob_end_clean();
+}
+function generateDaily() {
+include('config.php');
+$ps = "$pseudochannelMaster";
+	ob_start();
+	echo exec("python -u " . "$ps" . "/controls.py -g > output.log 2>&1 &", $output, $err);
 	ob_end_clean();
 }
 if(isset($_GET['action'])){
@@ -105,9 +125,6 @@ if(isset($_GET['action'])){
 		break;
 		case 'update':
 			databaseUpdate();
-		break;
-		case 'updateweb':
-			update_web();
 		break;
 		case 'purgefaviconcache':
 			purge_favicon_cache();

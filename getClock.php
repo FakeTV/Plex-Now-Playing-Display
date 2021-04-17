@@ -7,9 +7,11 @@ $results = Array();
 if (isset($_GET['tv'])) {
         $plexClientName = $_GET['tv'];
 	$urlstring = "tv=" . $_GET['tv'];
-	if ($_GET['tv'] != $configClientName) {
+	if ($_GET['tv'] != $configClientName && $_GET['tv'] !== "null" && $_GET['tv'] !== NULL) {
 		$pseudochannel = $pseudochannelTrim . "_" . $_GET['tv'] . "/";
 		$pseudochannel = trim($pseudochannel);
+	} else {
+		$pseudochannel = $pseudochannelTrim . "/";
 	}
 } else {
 	$urlstring = "";
@@ -45,15 +47,38 @@ $text_color='cyan';
 $text_color_alt='cyan';
 
 //CHECK IF PSEUDO CHANNEL IS RUNNING AND ON WHAT CHANNEL
-$is_ps_running = "find " . $pseudochannel . " -name running.pid -type f -exec cat {} +";
-$ps_channel_id = "find " . $pseudochannel . " -name running.pid -type f";
-$pgrep = shell_exec($is_ps_running); //check if pseudo channel is running
-$pdir = shell_exec($ps_channel_id); //identify directory has the running.pid file
-$channel_number = str_replace($pseudochannel . "pseudo-channel_", "", $pdir); //strip the prefix of the directory name to get the channel number
-$channel_num = ltrim($channel_number, '0'); //strip the leading zero from single digit channel numbers
-$channel_num = str_replace("/running.pid", "", $channel_num); //strip running.pid filename from the variable
-$chnum = str_replace("/running.pid", "",$channel_number); //strip running.pid from the variable that keeps the leading zero
-$chnum = trim($chnum);
+//$is_ps_running = "find " . $pseudochannel . " -name running.pid -type f -exec cat {} +";
+//$ps_channel_id = "find " . $pseudochannel . " -name running.pid -type f";
+//$pgrep = shell_exec($is_ps_running); //check if pseudo channel is running
+//$pdir = shell_exec($ps_channel_id); //identify directory has the running.pid file
+
+$pid_array = array();
+$pdir = "";
+$pschandirs = glob($pseudochannel . "*", GLOB_ONLYDIR);
+foreach($pschandirs as $pschan) {
+	if (file_exists($pschan . "/running.pid")) {
+		$pdir = $pschan . "/running.pid";
+		break;
+	}
+}
+
+//$pglob = glob($pseudochannel . "/psuedo-channel_*/running.pid");
+if ($pdir !== "") {
+	$pidfile = fopen($pdir, "r") or die("Unable to open running.pid file");
+	$pgrep = fread($pidfile,filesize($pdir));
+	$channel_number = str_replace($pseudochannel . "pseudo-channel_", "", $pdir); //strip the prefix of the directory name to get the channel number
+	$channel_num = ltrim($channel_number, '0'); //strip the leading zero from single digit channel numbers
+	$channel_num = str_replace("/running.pid", "", $channel_num); //strip running.pid filename from the variable
+	$chnum = str_replace("/running.pid", "",$channel_number); //strip running.pid from the variable that keeps the leading zero
+	$chnum = trim($chnum);	
+} else {
+	$channel_num = "NONE";
+	$pgrep = 0;
+}
+//foreach($pglob as $pdir) {
+	//$pidfile = fopen($pdir, "r") or die("Unable to open running.pid file");
+	//$pgrep = fread($pidfile,filesize($ps_channel_id));
+//}
 
 // LINE STYLE VARIABLES
 if ($DisplayType == 'half') {
@@ -102,9 +127,9 @@ if ($DisplayType == 'full') {
 	$position_idle_full = "<img position: absolute; top: 0; src='/assets/vcr-play.jpg' width='100%' style='opacity:1;'>";
 }
 
-if(strcmp($channel_num," ")<=0){
-	$channel_num=0;
-}
+//if(strcmp($channel_num," ")<=0){
+//	$channel_num=0;
+//}
 
 //If Nothing is Playing
 $text_color='cyan';
@@ -199,5 +224,6 @@ $results['top'] = "$top_section";
 $results['middle'] = "$middle_section $bottom_section";
 $results['bottom'] = "<p></p>";
 $results['nowplaying'] = "$nowplaying";
+$results['testClock'] = "$pdir";
 echo json_encode($results);
 ?>
