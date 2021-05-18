@@ -136,6 +136,12 @@ $boxes = '';
 			$randomTitleSelected = "";
 		}
 
+		if ($sqlData['title'] == "kevinbacon") {
+			$kevinBaconSelected = "selected";
+		} else {
+			$kevinBaconSelected = "";
+		}
+
                 $showData = array();
 		$allShows = array();
                 $showsResult = $psDB->query("SELECT title FROM shows ORDER BY id"); //get all show titles
@@ -249,6 +255,7 @@ $boxes = '';
 			<option value='random'<?php echo $selectRandom; ?> >Random Show Episode</option></select></br>
 			<label for='titleEntry'>Title: </label><select name='titleEntry' id='titleEntry'>
 			<option value='random'<?php echo $randomTitleSelected; ?> >Random Title</option>
+			<option value='kevinbacon'<?php echo $kevinBaconSelected; ?> >Kevin Bacon Mode</option>
 			<?php echo $showDropDown; ?></select></br>
 			<label for='dayofweek'>Day(s): </label><select name='dayofweek' id='dayofweek'>
 			<?php echo $daysDropDown; ?></select></br>

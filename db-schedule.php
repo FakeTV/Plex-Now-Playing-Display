@@ -197,10 +197,10 @@ $boxes = '';
 							} else {
 								$scheduleDuration = $explodeDuration[0] . " - " . $explodeDuration[1] . " Mins";
 							}
-						} elseif ($sqlData['title'] != "random") {
-	               	                                $durationStatement = $psDB->prepare("SELECT * FROM shows WHERE title == :title");
-        	                                        $durationStatement->bindParam(':title', $sqlData['title']);
-                	                                $durationResult = $durationStatement->execute();
+						} elseif ($sqlData['title'] != "random" and $sqlData['title'] != "kevinbacon") {
+							$durationStatement = $psDB->prepare("SELECT * FROM shows WHERE title == :title");
+							$durationStatement->bindParam(':title', $sqlData['title']);
+							$durationResult = $durationStatement->execute();
 							$durationArray = $durationResult->fetchArray();
 							$scheduleDuration = round($durationArray['duration'] / 60000) . " Mins";
 						} else {
@@ -223,7 +223,11 @@ $boxes = '';
 						$scheduleTable .= "<td><span name='" . $ch_row . "Day' style='width: 6em'>" . ucfirst($sqlData['dayOfWeek']) . "</span></td>";
 						$scheduleTable .= "<td><span name='" . $ch_row . "Start' style='width: 7em'>" . $sqlData['startTime'] . "</span></td>";
 						$scheduleTable .= "<td><span name='" . $ch_row . "Section' style='width: 9em'>" . ucfirst($sectionText) . "</span></td>";
-						$scheduleTable .= "<td><span name='" . $ch_row . "Title' style='width: 20em'>" . ucfirst($sqlData['title']) . "</td>";
+						if($sqlData['title'] == "kevinbacon") {
+							$scheduleTable .= "<td><span name='" . $ch_row . "Title' style='width: 20em'>" . ucfirst("Random (Kevin Bacon Mode)") . "</td>";
+						} else {
+							$scheduleTable .= "<td><span name='" . $ch_row . "Title' style='width: 20em'>" . ucfirst($sqlData['title']) . "</td>";
+						}
 						$scheduleTable .= "<td><span name='" . $ch_row . "strictTime'>" . $timeMode . "</td>";
 						$scheduleTable .= "<td><span name='" . $ch_row . "DurationMin' style='width: 7em'>" . $scheduleDuration . "</span></td>";
 						$scheduleTable .= "<td><span name='" . $ch_row . "TimeShift' style='width: 4em'>" . $sqlData['timeShift'] . " Mins</td>";
