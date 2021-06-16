@@ -735,4 +735,31 @@ table.schedule-table, td:hover{
 clear:both;
 }
 
+.vcr-half-blink {
+        font-family:digital-7-mono;
+        font-size:95px;
+        font-style:monospace;
+        text-shadow:1px 1px 3px cyan, 0 0 25px cyan, 0 0 5px black;
+        color:cyan;
+        line-height:92%;
+        text-align:left;
+        z-index:100;
+        top:0px;
+        position:absolute;
+        width:350px;
+        left:140px;
+        margin-left:0px;
+        animation: blinker 1s linear infinite;
+}
+
+@keyframes blinker {
+	from,
+	49.9% {
+		opacity: 0;
+	}
+	50%,
+	to {
+		opacity: 1;
+	}
+}
 
