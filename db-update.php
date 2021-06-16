@@ -94,12 +94,12 @@ include('./config.php');
 	</head>
 	<body>
 		<script src="https://ajax.googleapis.com/ajax/libs/jquery/2.1.1/jquery.min.js"></script>
-		<div id="topbar" name="topbar"></div>
 		<div id="container">
-		<div class="container" style="position:absolute;top:60px" scrolling="no"><h3 style="color:white" class="gn-icon gn-icon-earth">Pseudo Channel Web Interface</h3></div>
-			</div></br></br></br></br></br></br>
+		<div class="container" style="position:absolute;top:60px" scrolling="no">
+		<h3 style="color:white" class="gn-icon gn-icon-earth">Pseudo Channel Web Interface</h3></div>
+			</br></br></br></br></br></br>
 			<div class="dripdrop-header" style="color:white;padding-left:10px">
-			<p>Pseudo Channel Database Update</p></div>
+			<p>Pseudo Channel Database Controls</p></div>
 			<div id="output" class="dripdrop-paragraph" style="color:white;padding-left:10px">
 			<?php
 			if ($_GET['output'] != "yes" && $_GET['update'] != "complete" && $_GET['dailyschedule'] != "complete") : ?>
@@ -143,9 +143,10 @@ include('./config.php');
 			</div></br>
 			<div class="dripdrop" style="color:white;padding-left:10px">
 			<a class="dripdrop-header">Plex Server: </a><a><?php echo $plexServer; ?>:<?php echo $plexport; ?></a></br>
-			<a class="dripdrop-header">Pseudo Channel: </a><a><?php echo $pseudochannelMaster; ?></a></div></br></br>
+			<a class="dripdrop-header">Pseudo Channel: </a><a><?php echo $pseudochannelMaster; ?></a></div></br></br></div>
 			
 		</div><!-- /container -->
+		<div id="topbar" name="topbar"></div>
 		<script src="js/classie.js"></script>
 		<script src="js/gnmenu.js"></script>
 		<script>

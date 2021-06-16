@@ -149,10 +149,13 @@ if ($pgrep >= 1) { //PSEUDO CHANNEL ON
 	$middle_section = $top_line . "Channel $channel_num</p>";
 	$bottom_section = $middle_line . "</p>";
 	$nowplaying = "Channel $channel_num Standing By...";
+	$nowplayingtext['status'] = 'Waiting';
+	$nowplayingtext['channelNum'] = "$channel_num";
 } else { //PSEUDO CHANNEL OFF
 	$middle_section = $top_line . $day . "</p>";
 	$bottom_section = "<p></p>";
 	$nowplaying = "Please Stand By...";
+	$nowplayingtext['status'] = 'Not Playing';
 }
 
   if ($xml['size'] != '0') { //IF PLAYING CONTENT
@@ -176,6 +179,10 @@ if ($pgrep >= 1) { //PSEUDO CHANNEL ON
 					$bottom_section = "<p></p>";
 					$title_clean = str_replace("_", " ", $clients['title']);
 					$nowplaying = "<a href='schedule.php?$urlstring' style='color:white'>Now Playing: <span style='color:red;'>" . $title_clean . "</span> on Channel ". $channel_num . "</a>";
+					$nowplayingtext['status'] = 'Playing';
+					$nowplayingtext['mediaType'] = "Commercial";
+					$nowplayingtext['title'] = $commercialData['librarySectionTitle'];
+					$nowplayingtext['channelNum'] = $channel_num;
 				}
 				//IF PLAYING MOVIE
 				if($clients['type'] == "movie" && $clients['duration'] >= 1800000) {
@@ -196,6 +203,11 @@ if ($pgrep >= 1) { //PSEUDO CHANNEL ON
 					$middle_section = $top_line . $clients['title'] . $middle_line . $clients['year'] . "</p>";
 					$bottom_section = $bottom_line . $clients['tagline'] . "</p>";
 					$nowplaying = "<a href='schedule.php?$urlstring' style='color:white'>Now Playing: <span style='color:red;'>" . $clients['title'] . " (" . $clients['year'] . ")" . "</span> on Channel ". $channel_num . "</a>";
+					$nowplayingtext['status'] = 'Playing';
+					$nowplayingtext['mediaType'] = "Movie";
+					$nowplayingtext['title'] = $clients['title'];
+					$nowplayingtext['year'] = $clients['year'];
+					$nowplayingtext['channelNum'] = $channel_num;
 				}
 				//IF PLAYING TV SHOW
 				if($clients['type'] == "show" || $clients['parentTitle'] != "") {
@@ -215,6 +227,13 @@ if ($pgrep >= 1) { //PSEUDO CHANNEL ON
 					$middle_section = $top_line . $clients['grandparentTitle'] . "</p>" . $middle_line . $clients['parentTitle'] . ", Episode " . $clients['index'] . "</p>";
 					$bottom_section = $bottom_line . $clients['title'] . "</p>" . $side_channel . "</p>";
 					$nowplaying = "<a href='schedule.php?$urlstring' style='color:white'>Now Playing:  <span style='color:red;'>" . $clients['grandparentTitle'] . " • " . $clients['parentTitle'] . ", Episode " . $clients['index'] . " • " . $clients['title'] . "</span> on Channel ". $channel_num . "</a>";
+					$nowplayingtext['status'] = 'Playing';
+					$nowplayingtext['mediaType'] = "TV";
+					$nowplayingtext['title'] = $clients['grandparentTitle'];
+					$nowplayingtext['season'] = $clients['parentTitle'];
+					$nowplayingtext['episodeNum'] = $clients['index'];
+					$nowplayingtext['episodeTitle'] = $clients['title'];
+					$nowplayingtext['channelNum'] = $channel_num;
 					}
 				}
 		  }
@@ -224,6 +243,6 @@ $results['top'] = "$top_section";
 $results['middle'] = "$middle_section $bottom_section";
 $results['bottom'] = "<p></p>";
 $results['nowplaying'] = "$nowplaying";
-$results['testClock'] = "$pdir";
 echo json_encode($results);
+
 ?>

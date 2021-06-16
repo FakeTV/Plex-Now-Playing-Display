@@ -80,7 +80,7 @@ $boxes = '';
 		
 		<?php
 		$dircontents=array();
-		$scheduleTable = "<table width='100%' max-width='100%' class='schedule-table'><thead><tr width='100%'><th width='4%' max-width='4%'>&nbsp;ID&nbsp;</th><th colspan='1' width='8%' max-width='8%'>Day</th><th colspan='1' width='8%' max-width='8%'>Start Time</th><th colspan='1' width='8%' max-width='8%'>Section</th><th colspan='1' max-width='8%' width='8%'>Title</th><th colspan='1' width='8%' max-width='8%'>Time Mode</th><th colspan='1' max-width='8%' width='8%'>Duration</th><th colspan='1' width='8%' max-width='8%'>Time Shift</th><th colspan='1' max-width='8%' width='8%'>Max Preempt</th><th colspan='1' width='8%' max-width='8%'>Xtra</th><th>Submit</th></thead><tbody>";
+		$scheduleTable = "<table width='100%' max-width='100%' class='schedule-table'><thead><tr width='100%'><th width='4%' max-width='4%'>&nbsp;ID&nbsp;</th><th colspan='1' width='8%' max-width='8%'>Day</th><th colspan='1' width='8%' max-width='8%'>Start Time</th><th colspan='1' width='8%' max-width='8%'>Section</th><th colspan='1' max-width='8%' width='8%'>Title</th><th colspan='1' width='8%' max-width='8%'>Time Mode</th><th colspan='1' max-width='8%' width='8%'>Duration</th><th colspan='1' width='8%' max-width='8%'>Time Shift</th><th colspan='1' max-width='8%' width='8%'>Max Preempt</th><th colspan='1' width='8%' max-width='8%'>Extra Data</th><th>Submit</th></thead><tbody>";
 
 		//GET ALL PSEUDO CHANNEL DATABASE FILE LOCATIONS
 		$DBarray = array();
@@ -135,7 +135,7 @@ $boxes = '';
 						$rightNow = intval(time());
 						$getID = intval($_GET['id']);
 						$getDay = $_GET['day'];
-						$insertStatement = $psDB->prepare("INSERT INTO schedule VALUES (null, :unix, '999', 'random', '19,30', :startTime, '0', :dayOfWeek, :startTimeUnix, 'TV Shows', 'secondary', '5', '30', '')");
+						$insertStatement = $psDB->prepare("INSERT INTO schedule VALUES (null, :unix, '999', 'random', '19,30', :startTime, '0', :dayOfWeek, :startTimeUnix, 'TV Shows', 'secondary', '5', '30', '', '', '', '', '', '', '', '', '')");
 						$insertStatement->bindParam(':unix', $rightNow);
 						$insertStatement->bindParam(':startTime', $getStartTime);
 						$insertStatement->bindParam(':dayOfWeek', $getDay);
@@ -147,7 +147,7 @@ $boxes = '';
 						$rightNow = intval(time());
 						$getID = intval($_GET['id']) + 1;
 						$getDay = $_GET['day'];
-						$insertStatement = $psDB->prepare("INSERT INTO schedule VALUES (null, :unix, '999', 'random', '19,30', :startTime, '0', :dayOfWeek, :startTimeUnix, 'TV Shows', 'secondary', '5', '30', '')");
+						$insertStatement = $psDB->prepare("INSERT INTO schedule VALUES (null, :unix, '999', 'random', '19,30', :startTime, '0', :dayOfWeek, :startTimeUnix, 'TV Shows', 'secondary', '5', '30', '', '', '', '', '', '', '', '', '')");
 						$insertStatement->bindParam(':unix', $rightNow);
 						$insertStatement->bindParam(':startTime', $getStartTime);
 						$insertStatement->bindParam(':dayOfWeek', $getDay);
@@ -189,9 +189,9 @@ $boxes = '';
 						$explodeDuration = explode(",", $sqlData['duration']);
 						if ($sqlData['mediaID'] == 9999) {
 							if($explodeDuration[0] == "0" && $explodeDuration[1] == "43200000") {
-	               	        	                        $durationStatement = $psDB->prepare("SELECT * FROM shows WHERE title == :title");
-        	        	                                $durationStatement->bindParam(':title', $sqlData['title']);
-                		                                $durationResult = $durationStatement->execute();
+								$durationStatement = $psDB->prepare("SELECT * FROM shows WHERE title == :title");
+								$durationStatement->bindParam(':title', $sqlData['title']);
+								$durationResult = $durationStatement->execute();
 								$durationArray = $durationResult->fetchArray();
 								$scheduleDuration = round($durationArray['duration'] / 60000) . " Mins";
 							} else {
@@ -210,15 +210,86 @@ $boxes = '';
 							$scheduleDuration = $explodeDuration[0] . " - " . $explodeDuration[1] . " Mins";
 							}
 						}
-				                if ($sqlData['xtra'] != "") {
-				                        $xtraData = str_replace(";","</br>",$sqlData['xtra']);
-				                        $xtraData = str_replace(":",": ",$xtraData);
-				                        $xtraData = ucwords($xtraData,">");
-				                        $xtraData = ucwords($xtraData," ");
-				                        $xtraData = ucwords($xtraData,"-");
-				                } else {
-				                        $xtraData = "";
-				                }
+						if ($sqlData['xtra'] != "") {
+							$xtraData = str_replace(";","</br>",$sqlData['xtra']);
+							$xtraData = str_replace(":",": ",$xtraData);
+							$xtraData = ucwords($xtraData,">");
+							$xtraData = ucwords($xtraData," ");
+							$xtraData = ucwords($xtraData,"-");
+						} else {
+							$xtraData = "";
+							if ($sqlData['rerun'] == "1") {
+								$xtraData .= "Rerun Last Episode</br>";
+							}
+							if ($sqlData['seasonEpisode'] != "") {
+								$seasonEpisodeArray = explode(',', $sqlData['seasonEpisode']);
+								if ($seasonEpisodeArray[0] != '*') {
+									$xtraData .= "Season # " . $seasonEpisodeArray[0] . "</br>";
+								}
+								if ($seasonEpisodeArray[1] != '*') {
+									$xtraData .= "Episode # " . $seasonEpisodeArray[1] . "</br>";
+								}
+							}
+							if ($sqlData['year'] != "") {
+								if (strpos($sqlData['year'], '*') !== false) {
+									$decade = str_replace('*','0s',$sqlData['year']);
+									$xtraData .= "Decade: " . $decade . "</br>";
+								} else {
+									$xtraData .= "Year: " . $sqlData['year'] . "</br>";
+								}
+							}
+							if ($sqlData['genres'] != "") {
+								if (strpos($sqlData['genres'], ',') !== false) {
+									$genreArray = explode(',', $sqlData['genres']);
+									foreach($genreArray as $genre) {
+										$xtraData .= "Genre: " . $genre . "</br>";
+									}
+								} else {
+									$xtraData .= "Genre: " . $sqlData['genres'] . "</br>";
+								}
+							}
+							if ($sqlData['actors'] != "") {
+								if (strpos($sqlData['actors'], ',') !== false) {
+									$actorArray = explode(',', $sqlData['actors']);
+									foreach($actorArray as $actor) {
+										$xtraData .= "Actor: " . $actor . "</br>";
+									}
+								} else {
+									$xtraData .= "Actor: " . $sqlData['actors'] . "</br>";
+								}
+							}
+							if ($sqlData['collections'] != "") {
+								if (strpos($sqlData['collections'], ',') !== false) {
+									$collectionArray = explode(',', $sqlData['collections']);
+									foreach($collectionArray as $collection) {
+										$xtraData .= "Collection: " . $collection . "</br>";
+									}
+								} else {
+									$xtraData .= "Collection: " . $sqlData['collections'] . "</br>";
+								}
+							}
+							if ($sqlData['rating'] != "") {
+								$ratingArray = explode(',', $sqlData['rating']);
+								$xtraData .= "Rating: " . $ratingArray[1];
+								if ($ratingArray[2] == '<') {
+									$xtraData .= "↓</br>";
+								} elseif ($ratingArray[2] == '>') {
+									$xtraData .= "↑</br>";
+								} else {
+									$xtraData .= "</br>";
+								}
+							}
+							if ($sqlData['studio'] != "") {
+								if (strpos($sqlData['studio'], ',') !== false) {
+									$studioArray = explode(',', $sqlData['studio']);
+									foreach($studioArray as $studio) {
+										$xtraData .= "Studio: " . $studio . "</br>";
+									}
+								} else {
+									$xtraData .= "Studio: " . $sqlData['studio'] . "</br>";
+								}
+							}
+						}
 						$scheduleTable .= "<tr><td>" . $sqlData['id'] . "</td>";
 						$scheduleTable .= "<td><span name='" . $ch_row . "Day' style='width: 6em'>" . ucfirst($sqlData['dayOfWeek']) . "</span></td>";
 						$scheduleTable .= "<td><span name='" . $ch_row . "Start' style='width: 7em'>" . $sqlData['startTime'] . "</span></td>";

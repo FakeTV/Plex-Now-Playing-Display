@@ -351,7 +351,16 @@ foreach ($DBarray as $databasefile) { //do the following for each database file
 				$channelData .= "</br>(" . date('H:i',$start_time_human) . " - " . date('H:i',$end_time_human) . ")</span></td>";
 				$lastentry = $sqlData;
 			} elseif ($sqlData['sectionType'] == "Movies") {
-				$channelData .= "<span class='schedule-title' style='$channelplayingTitleStyle';>" . $sqlData['title'] . "</span>";
+				if ($sqlData['mediaID'] == "112") {
+					$kevinbacon = explode(',',$sqlData['showTitle']);
+					if ($kevinbacon[0] != "") {
+						$channelData .= "<div class='tooltip'><span class='schedule-title' style='$channelplayingTitleStyle';>" . $sqlData['title'] . "</span><span class ='tooltiptext'>Linked from <i>" . $kevinbacon[1] . "</i> with <i>" . $kevinbacon[0] . "</i>.</span>";
+					} else {
+						$channelData .= "<span class='schedule-title' style='$channelplayingTitleStyle';>" . $sqlData['title'] . "</span>";
+					}
+				} else {
+					$channelData .= "<span class='schedule-title' style='$channelplayingTitleStyle';>" . $sqlData['title'] . "</span>";
+				}
 				$channelData .= "</br><span class='schedule-subtitle';>(" . date('H:i',$start_time_human) . " - " . date('H:i',$end_time_human) . ")</span></td>";
 				$lastentry = $sqlData;
 			}
@@ -385,7 +394,16 @@ foreach ($DBarray as $databasefile) { //do the following for each database file
 				$channelData .= "</br>(" . date('H:i',$start_time_human) . " - " . date('H:i',$end_time_human) . ")</span></td>";
 				$lastentry = $sqlData;
 			} elseif ($sqlData['sectionType'] == "Movies") {
-				$channelData .= "<span class='schedule-title' style='$channelplayingTitleStyle';>" . $sqlData['title'] . "</span>";
+				if ($sqlData['mediaID'] == "112") {
+					$kevinbacon = explode(',',$sqlData['showTitle']);
+					if ($kevinbacon[0] != "") {
+						$channelData .= "<div class='tooltip'><span class='schedule-title' style='$channelplayingTitleStyle';>" . $sqlData['title'] . "</span><span class ='tooltiptext'>Linked from <i>" . $kevinbacon[1] . "</i> with <i>" . $kevinbacon[0] . "</i>.</span>";
+					} else {
+						$channelData .= "<span class='schedule-title' style='$channelplayingTitleStyle';>" . $sqlData['title'] . "</span>";
+					}
+				} else {
+					$channelData .= "<span class='schedule-title' style='$channelplayingTitleStyle';>" . $sqlData['title'] . "</span>";
+				}
 				$channelData .= "</br><span class='schedule-subtitle';>(" . date('H:i',$start_time_human) . " - " . date('H:i',$end_time_human) . ")</span></td>";
 				$lastentry = $sqlData;
 			}
@@ -420,7 +438,16 @@ foreach ($DBarray as $databasefile) { //do the following for each database file
 				$channelData .= "</br>(" . date('H:i',$start_time_human) . " - " . date('H:i',$end_time_human) . ")</span></td>";
 				$lastentry = $sqlData;
 			} elseif ($sqlData['sectionType'] == "Movies") {
-				$channelData .= "<span class='schedule-title' style='$channelplayingTitleStyle';>" . $sqlData['title'] . "</span>";
+				if ($sqlData['mediaID'] == "112") {
+					$kevinbacon = explode(',',$sqlData['showTitle']);
+					if ($kevinbacon[0] != "") {
+						$channelData .= "<div class='tooltip'><span class='schedule-title' style='$channelplayingTitleStyle';>" . $sqlData['title'] . "</span><span class ='tooltiptext'>Linked from <i>" . $kevinbacon[1] . "</i> with <i>" . $kevinbacon[0] . "</i>.</span>";
+					} else {
+						$channelData .= "<span class='schedule-title' style='$channelplayingTitleStyle';>" . $sqlData['title'] . "</span>";
+					}
+				} else {
+					$channelData .= "<span class='schedule-title' style='$channelplayingTitleStyle';>" . $sqlData['title'] . "</span>";
+				}
 				$channelData .= "</br><span class='schedule-subtitle';>(" . date('H:i',$start_time_human) . " - " . date('H:i',$end_time_human) . ")</span></td>";
 				$lastentry = $sqlData;
 			}
@@ -455,7 +482,16 @@ foreach ($DBarray as $databasefile) { //do the following for each database file
 				$channelData .= "</br>(" . date('H:i',$start_time_human) . " - " . date('H:i',$end_time_human) . ")</span></td>";
 				$lastentry = $sqlData;
 			} elseif ($sqlData['sectionType'] == "Movies") {
-				$channelData .= "<span class='schedule-title' style='$channelplayingTitleStyle';>" . $sqlData['title'] . "</span>";
+				if ($sqlData['mediaID'] == "112") {
+					$kevinbacon = explode(',',$sqlData['showTitle']);
+					if ($kevinbacon[0] != "") {
+						$channelData .= "<div class='tooltip'><span class='schedule-title' style='$channelplayingTitleStyle';>" . $sqlData['title'] . "</span><span class ='tooltiptext'>Linked from <i>" . $kevinbacon[1] . "</i> with <i>" . $kevinbacon[0] . "</i>.</span>";
+					} else {
+						$channelData .= "<span class='schedule-title' style='$channelplayingTitleStyle';>" . $sqlData['title'] . "</span>";
+					}
+				} else {
+					$channelData .= "<span class='schedule-title' style='$channelplayingTitleStyle';>" . $sqlData['title'] . "</span>";
+				}
 				$channelData .= "</br><span class='schedule-subtitle'>(" . date('H:i',$start_time_human) . " - " . date('H:i',$end_time_human) . ")</span></td>";
 				$lastentry = $sqlData;
 			}
@@ -490,7 +526,16 @@ foreach ($DBarray as $databasefile) { //do the following for each database file
 				$channelData .= "</br>(" . date('H:i',$start_time_human) . " - " . date('H:i',$end_time_human) . ")</span></td>";
 				$lastentry = $sqlData;
 			} elseif ($sqlData['sectionType'] == "Movies") {
-				$channelData .= "<span class='schedule-title' style='$channelplayingTitleStyle';>" . $sqlData['title'] . "</span>";
+				if ($sqlData['mediaID'] == "112") {
+					$kevinbacon = explode(',',$sqlData['showTitle']);
+					if ($kevinbacon[0] != "") {
+						$channelData .= "<div class='tooltip'><span class='schedule-title' style='$channelplayingTitleStyle';>" . $sqlData['title'] . "</span><span class ='tooltiptext'>Linked from <i>" . $kevinbacon[1] . "</i> with <i>" . $kevinbacon[0] . "</i>.</span>";
+					} else {
+						$channelData .= "<span class='schedule-title' style='$channelplayingTitleStyle';>" . $sqlData['title'] . "</span>";
+					}
+				} else {
+					$channelData .= "<span class='schedule-title' style='$channelplayingTitleStyle';>" . $sqlData['title'] . "</span>";
+				}
 				$channelData .= "</br><span class='schedule-subtitle';>(" . date('H:i',$start_time_human) . " - " . date('H:i',$end_time_human) . ")</span></td>";
 				$lastentry = $sqlData;
 			}
@@ -525,7 +570,16 @@ foreach ($DBarray as $databasefile) { //do the following for each database file
 				$channelData .= "</br>(" . date('H:i',$start_time_human) . " - " . date('H:i',$end_time_human) . ")</span></td>";
 				$lastentry = $sqlData;
 			} elseif ($sqlData['sectionType'] == "Movies") {
-				$channelData .= "<span class='schedule-title' style='$channelplayingTitleStyle';>" . $sqlData['title'] . "</span>";
+				if ($sqlData['mediaID'] == "112") {
+					$kevinbacon = explode(',',$sqlData['showTitle']);
+					if ($kevinbacon[0] != "") {
+						$channelData .= "<div class='tooltip'><span class='schedule-title' style='$channelplayingTitleStyle';>" . $sqlData['title'] . "</span><span class ='tooltiptext'>Linked from <i>" . $kevinbacon[1] . "</i> with <i>" . $kevinbacon[0] . "</i>.</span>";
+					} else {
+						$channelData .= "<span class='schedule-title' style='$channelplayingTitleStyle';>" . $sqlData['title'] . "</span>";
+					}
+				} else {
+					$channelData .= "<span class='schedule-title' style='$channelplayingTitleStyle';>" . $sqlData['title'] . "</span>";
+				}
 				$channelData .= "</br><span class='schedule-subtitle';>(" . date('H:i',$start_time_human) . " - " . date('H:i',$end_time_human) . ")</span></td>";
 				$lastentry = $sqlData;
 			}
@@ -560,7 +614,16 @@ foreach ($DBarray as $databasefile) { //do the following for each database file
 				$channelData .= "</br>(" . date('H:i',$start_time_human) . " - " . date('H:i',$end_time_human) . ")</span></td>";
 				$lastentry = $sqlData;
 			} elseif ($sqlData['sectionType'] == "Movies") {
-				$channelData .= "<span class='schedule-title' style='$channelplayingTitleStyle';>" . $sqlData['title'] . "</span>";
+				if ($sqlData['mediaID'] == "112") {
+					$kevinbacon = explode(',',$sqlData['showTitle']);
+					if ($kevinbacon[0] != "") {
+						$channelData .= "<div class='tooltip'><span class='schedule-title' style='$channelplayingTitleStyle';>" . $sqlData['title'] . "</span><span class ='tooltiptext'>Linked from <i>" . $kevinbacon[1] . "</i> with <i>" . $kevinbacon[0] . "</i>.</span>";
+					} else {
+						$channelData .= "<span class='schedule-title' style='$channelplayingTitleStyle';>" . $sqlData['title'] . "</span>";
+					}
+				} else {
+					$channelData .= "<span class='schedule-title' style='$channelplayingTitleStyle';>" . $sqlData['title'] . "</span>";
+				}
 				$channelData .= "</br><span class='schedule-subtitle';>(" . date('H:i',$start_time_human) . " - " . date('H:i',$end_time_human) . ")</span></td>";
 				$lastentry = $sqlData;
 			}
@@ -595,7 +658,16 @@ foreach ($DBarray as $databasefile) { //do the following for each database file
 				$channelData .= "</br>(" . date('H:i',$start_time_human) . " - " . date('H:i',$end_time_human) . ")</span></td>";
 				$lastentry = $sqlData;
 			} elseif ($sqlData['sectionType'] == "Movies") {
-				$channelData .= "<span class='schedule-title' style='$channelplayingTitleStyle';>" . $sqlData['title'] . "</span>";
+				if ($sqlData['mediaID'] == "112") {
+					$kevinbacon = explode(',',$sqlData['showTitle']);
+					if ($kevinbacon[0] != "") {
+						$channelData .= "<div class='tooltip'><span class='schedule-title' style='$channelplayingTitleStyle';>" . $sqlData['title'] . "</span><span class ='tooltiptext'>Linked from <i>" . $kevinbacon[1] . "</i> with <i>" . $kevinbacon[0] . "</i>.</span>";
+					} else {
+						$channelData .= "<span class='schedule-title' style='$channelplayingTitleStyle';>" . $sqlData['title'] . "</span>";
+					}
+				} else {
+					$channelData .= "<span class='schedule-title' style='$channelplayingTitleStyle';>" . $sqlData['title'] . "</span>";
+				}
 				$channelData .= "</br><span class='schedule-subtitle';>(" . date('H:i',$start_time_human) . " - " . date('H:i',$end_time_human) . ")</span></td>";
 				$lastentry = $sqlData;
 			}
@@ -630,7 +702,16 @@ foreach ($DBarray as $databasefile) { //do the following for each database file
 				$channelData .= "</br>(" . date('H:i',$start_time_human) . " - " . date('H:i',$end_time_human) . ")</span></td>";
 				$lastentry = $sqlData;
 			} elseif ($sqlData['sectionType'] == "Movies") {
-				$channelData .= "<span class='schedule-title' style='$channelplayingTitleStyle';>" . $sqlData['title'] . "</span>";
+				if ($sqlData['mediaID'] == "112") {
+					$kevinbacon = explode(',',$sqlData['showTitle']);
+					if ($kevinbacon[0] != "") {
+						$channelData .= "<div class='tooltip'><span class='schedule-title' style='$channelplayingTitleStyle';>" . $sqlData['title'] . "</span><span class ='tooltiptext'>Linked from <i>" . $kevinbacon[1] . "</i> with <i>" . $kevinbacon[0] . "</i>.</span>";
+					} else {
+						$channelData .= "<span class='schedule-title' style='$channelplayingTitleStyle';>" . $sqlData['title'] . "</span>";
+					}
+				} else {
+					$channelData .= "<span class='schedule-title' style='$channelplayingTitleStyle';>" . $sqlData['title'] . "</span>";
+				}
 				$channelData .= "</br><span class='schedule-subtitle';>(" . date('H:i',$start_time_human) . " - " . date('H:i',$end_time_human) . ")</span></td>";
 				$lastentry = $sqlData;
 			}
@@ -665,7 +746,16 @@ foreach ($DBarray as $databasefile) { //do the following for each database file
 				$channelData .= "</br>(" . date('H:i',$start_time_human) . " - " . date('H:i',$end_time_human) . ")</span></td>";
 				$lastentry = $sqlData;
 			} elseif ($sqlData['sectionType'] == "Movies") {
-				$channelData .= "<span class='schedule-title' style='$channelplayingTitleStyle';>" . $sqlData['title'] . "</span>";
+				if ($sqlData['mediaID'] == "112") {
+					$kevinbacon = explode(',',$sqlData['showTitle']);
+					if ($kevinbacon[0] != "") {
+						$channelData .= "<div class='tooltip'><span class='schedule-title' style='$channelplayingTitleStyle';>" . $sqlData['title'] . "</span><span class ='tooltiptext'>Linked from <i>" . $kevinbacon[1] . "</i> with <i>" . $kevinbacon[0] . "</i>.</span>";
+					} else {
+						$channelData .= "<span class='schedule-title' style='$channelplayingTitleStyle';>" . $sqlData['title'] . "</span>";
+					}
+				} else {
+					$channelData .= "<span class='schedule-title' style='$channelplayingTitleStyle';>" . $sqlData['title'] . "</span>";
+				}
 				$channelData .= "</br><span class='schedule-subtitle';>(" . date('H:i',$start_time_human) . " - " . date('H:i',$end_time_human) . ")</span></td>";
 				$lastentry = $sqlData;
 			}
@@ -700,7 +790,16 @@ foreach ($DBarray as $databasefile) { //do the following for each database file
 				$channelData .= "</br>(" . date('H:i',$start_time_human) . " - " . date('H:i',$end_time_human) . ")</span></td>";
 				$lastentry = $sqlData;
 			} elseif ($sqlData['sectionType'] == "Movies") {
-				$channelData .= "<span class='schedule-title' style='$channelplayingTitleStyle';>" . $sqlData['title'] . "</span>";
+				if ($sqlData['mediaID'] == "112") {
+					$kevinbacon = explode(',',$sqlData['showTitle']);
+					if ($kevinbacon[0] != "") {
+						$channelData .= "<div class='tooltip'><span class='schedule-title' style='$channelplayingTitleStyle';>" . $sqlData['title'] . "</span><span class ='tooltiptext'>Linked from <i>" . $kevinbacon[1] . "</i> with <i>" . $kevinbacon[0] . "</i>.</span>";
+					} else {
+						$channelData .= "<span class='schedule-title' style='$channelplayingTitleStyle';>" . $sqlData['title'] . "</span>";
+					}
+				} else {
+					$channelData .= "<span class='schedule-title' style='$channelplayingTitleStyle';>" . $sqlData['title'] . "</span>";
+				}
 				$channelData .= "</br><span class='schedule-subtitle';>(" . date('H:i',$start_time_human) . " - " . date('H:i',$end_time_human) . ")</span></td>";
 				$lastentry = $sqlData;
 			}
@@ -735,7 +834,16 @@ foreach ($DBarray as $databasefile) { //do the following for each database file
 				$channelData .= "</br>(" . date('H:i',$start_time_human) . " - " . date('H:i',$end_time_human) . ")</span></td>";
 				$lastentry = $sqlData;
 			} elseif ($sqlData['sectionType'] == "Movies") {
-				$channelData .= "<span class='schedule-title' style='$channelplayingTitleStyle';>" . $sqlData['title'] . "</span>";
+				if ($sqlData['mediaID'] == "112") {
+					$kevinbacon = explode(',',$sqlData['showTitle']);
+					if ($kevinbacon[0] != "") {
+						$channelData .= "<div class='tooltip'><span class='schedule-title' style='$channelplayingTitleStyle';>" . $sqlData['title'] . "</span><span class ='tooltiptext'>Linked from <i>" . $kevinbacon[1] . "</i> with <i>" . $kevinbacon[0] . "</i>.</span>";
+					} else {
+						$channelData .= "<span class='schedule-title' style='$channelplayingTitleStyle';>" . $sqlData['title'] . "</span>";
+					}
+				} else {
+					$channelData .= "<span class='schedule-title' style='$channelplayingTitleStyle';>" . $sqlData['title'] . "</span>";
+				}
 				$channelData .= "</br><span class='schedule-subtitle';>(" . date('H:i',$start_time_human) . " - " . date('H:i',$end_time_human) . ")</span></td>";
 				$lastentry = $sqlData;
 			}
